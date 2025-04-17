@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 # ✅ Google Drive direct link for the .h5 model
 file_id = '1Vgtrw1Lf7KfLO-sbB8Iytfiyz9J5DTRR'
-model_url = f'https://drive.google.com/uc?id=1Vgtrw1Lf7KfLO-sbB8Iytfiyz9J5DTRR'
+model_url = f'https://drive.google.com/uc?id={file_id}'
 model_path = 'rice_type_classification_with_fluid_mechanics.h5'
 
 # ✅ Download the model if not already present
@@ -43,20 +43,32 @@ def preprocess_image(image_data):
 def index():
     if request.method == 'POST':
         image = request.files['image']
-        fluid_behavior = int(request.form['fluid_behavior'])
+        fluid_behavior_str = request.form['fluid_behavior']
 
         if not image:
             return render_template('index.html', error="Please upload an image.")
 
-        input_image = preprocess_image(io.BytesIO(image.read()))
-        fluid_input = np.array([[fluid_behavior]]).astype("float32")
+        # ✅ Map fluid behavior string to int
+        behavior_map = {
+            "Sink": 0,
+            "Float": 1
+        }
+        fluid_behavior = behavior_map.get(fluid_behavior_str, 0)
 
-        # ✅ Predict
-        prediction = model.predict([input_image, fluid_input])
-        predicted_class = np.argmax(prediction, axis=1)[0]
-        predicted_label = class_mapping[predicted_class]
+        try:
+            input_image = preprocess_image(io.BytesIO(image.read()))
+            fluid_input = np.array([[fluid_behavior]], dtype="float32")
 
-        return render_template('index.html', prediction=predicted_label)
+            # ✅ Predict
+            prediction = model.predict([input_image, fluid_input])
+            predicted_class = np.argmax(prediction, axis=1)[0]
+            predicted_label = class_mapping[predicted_class]
+
+            return render_template('index.html', prediction=predicted_label)
+
+        except Exception as e:
+            print("Prediction error:", e)
+            return render_template('index.html', error="Prediction failed. Check server logs.")
 
     return render_template('index.html')
 
