@@ -9,12 +9,12 @@ import gdown
 
 app = Flask(__name__)
 
-# ✅ Use direct downloadable link format for Google Drive
-file_id = '1PaZdjYFcjVSX-qTbC2TzIV-I5wRwU0gu'
-model_url = f'https://drive.google.com/uc?id={file_id}'
-model_path = 'rice_type_classification_model.keras'
+# ✅ Google Drive direct link for the .h5 model
+file_id = '1Vgtrw1Lf7KfLO-sbB8Iytfiyz9J5DTRR'
+model_url = f'https://drive.google.com/uc?id=1Vgtrw1Lf7KfLO-sbB8Iytfiyz9J5DTRR'
+model_path = 'rice_type_classification_with_fluid_mechanics.h5'
 
-# ✅ Download model if not present
+# ✅ Download the model if not already present
 if not os.path.exists(model_path):
     gdown.download(model_url, model_path, quiet=False)
 
@@ -51,7 +51,7 @@ def index():
         input_image = preprocess_image(io.BytesIO(image.read()))
         fluid_input = np.array([[fluid_behavior]]).astype("float32")
 
-        # ✅ Model prediction
+        # ✅ Predict
         prediction = model.predict([input_image, fluid_input])
         predicted_class = np.argmax(prediction, axis=1)[0]
         predicted_label = class_mapping[predicted_class]
