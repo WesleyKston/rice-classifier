@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 # ✅ Google Drive direct link for the .h5 model
 file_id = '1Vgtrw1Lf7KfLO-sbB8Iytfiyz9J5DTRR'
-model_url = f'https://drive.google.com/uc?id={file_id}'
+model_url = f'https://drive.google.com/uc?id=1Vgtrw1Lf7KfLO-sbB8Iytfiyz9J5DTRR'
 model_path = 'rice_type_classification_with_fluid_mechanics.h5'
 
 # ✅ Download the model if not already present
